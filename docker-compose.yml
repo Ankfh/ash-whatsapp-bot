@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  waha:
+    image: devlikeapro/waha:chrome
+    container_name: waha
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Chrome image bundles Chromium for WEBJS to work properly
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WAHA_DASHBOARD_NO_PASSWORD=True
+      - WHATSAPP_API_KEY=123
+    volumes:
+      - ./.waha:/app/.waha
+
+  waha-webhook:
+    build: .
+    image: ashfaq357/ash-whatsapp-bot:latest
+    container_name: waha-webhook
+    restart: unless-stopped
+    # Depending on whether openclaw is local or VPS we map this
+    ports:
+      - "3001:3001"
+    environment:
+      - OPENCLAW_URL=http://host.docker.internal:3000/api/chat
+    depends_on:
+      - waha
