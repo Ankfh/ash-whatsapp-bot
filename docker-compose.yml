@@ -9,6 +9,10 @@ services:
       - WHATSAPP_DEFAULT_ENGINE=${WHATSAPP_DEFAULT_ENGINE}
       - WAHA_DASHBOARD_NO_PASSWORD=True
       - WHATSAPP_API_KEY=${WAHA_API_KEY}
+
+        # Add webhook config
+      - WHATSAPP_HOOK_URL=http://waha-webhook:3000/webhook
+      - WHATSAPP_HOOK_EVENTS=message,message.any
     volumes:
       - ./.waha:/app/.waha
     networks:
