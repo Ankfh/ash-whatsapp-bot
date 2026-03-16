@@ -39,18 +39,19 @@ app.post("/waha-webhook", async (req, res) => {
   try {
     console.log(`[OpenClaw] Forwarding to ${OPENCLAW_URL}...`);
 
-    // 1. Send the message text to OpenClaw
+    // 1. Send the message text to OpenClaw (OpenAI compatible format)
     const response = await axios.post(
       OPENCLAW_URL,
-      { message: text },
+      {
+        model: "openclaw", // OpenClaw typically ignores this but it's required by the spec
+        messages: [{ role: "user", content: text }],
+      },
       { timeout: 45000 },
     );
 
-    // 2. Extract the OpenClaw reply
+    // 2. Extract the OpenClaw reply from the completions response
     const replyText =
-      response.data.reply ||
-      response.data.response ||
-      response.data.message ||
+      response.data?.choices?.[0]?.message?.content ||
       "Agent replied but format is unknown.";
     console.log(`[OpenClaw] Reply received: ${replyText}`);
 
